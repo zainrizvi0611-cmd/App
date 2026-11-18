@@ -261,6 +261,7 @@ function ReportActionItem({
     const [isPaymentMethodPopoverActive, setIsPaymentMethodPopoverActive] = useReportActionItemState<boolean | undefined>(undefined);
     const [isHidden, setIsHidden] = useReportActionItemState(false);
     const prevDecisionRef = useRef<string | null>(null);
+    const prevActionIDRef = useRef<string | null>(null);
     const {isActiveReportAction: isActiveReactionListReportAction, hideReactionList} = useContext(ReactionListContext);
     const {updateHiddenAttachments} = useContext(AttachmentModalContext);
     const popoverAnchorRef = useRef<ComponentRef<typeof View>>(null);
@@ -394,9 +395,10 @@ function ReportActionItem({
             return;
         }
 
-        if (prevDecisionRef.current === latestDecision) {
+        if (prevActionIDRef.current === action.reportActionID && prevDecisionRef.current === latestDecision) {
             return;
         }
+        prevActionIDRef.current = action.reportActionID;
         prevDecisionRef.current = latestDecision;
 
         // Hide reveal message button and show the message if latestDecision is changed to empty
@@ -410,7 +412,7 @@ function ReportActionItem({
             return;
         }
         setIsHidden(false);
-    }, [latestDecision, action.actionName, action.pendingAction, setIsHidden]);
+    }, [latestDecision, action.reportActionID, action.actionName, action.pendingAction, setIsHidden]);
 
     const toggleContextMenuFromActiveReportAction = () => {
         setIsContextMenuActive(isActiveReportAction(action.reportActionID));
