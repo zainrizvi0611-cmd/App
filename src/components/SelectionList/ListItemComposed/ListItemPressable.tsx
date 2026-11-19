@@ -83,15 +83,17 @@ function ListItemPressable<TItem extends ListItem>({
             shouldPreventEnterKeySubmit ||
             accessible === false ||
             event.nativeEvent.key !== CONST.KEYBOARD_SHORTCUTS.ENTER.shortcutKey ||
-            event.nativeEvent.shiftKey ||
-            event.nativeEvent.metaKey ||
-            event.nativeEvent.ctrlKey ||
             item.isInteractive === false
         ) {
             return;
         }
 
         event.preventDefault();
+
+        if (event.nativeEvent.shiftKey || event.nativeEvent.metaKey || event.nativeEvent.ctrlKey) {
+            return;
+        }
+
         onSelectRow(item);
     };
 
