@@ -3364,9 +3364,11 @@ function buildFilterQueryWithSortDefaults(
             groupBy: filterValues.groupBy,
         });
 
+    const shouldResetSortOrder = resetSortForViewChange && filterValues.view === CONST.SEARCH.VIEW.LINE;
+
     const queryString = buildQueryStringFromFilterFormValues(filterValues, {
         sortBy: resetSort || resetSortForViewChange ? undefined : currentQueryOptions.sortBy,
-        sortOrder: resetSort || resetSortForViewChange ? undefined : currentQueryOptions.sortOrder,
+        sortOrder: shouldResetSortOrder ? undefined : currentQueryOptions.sortOrder,
         flatFilters: currentQueryOptions.flatFilters,
     });
 
