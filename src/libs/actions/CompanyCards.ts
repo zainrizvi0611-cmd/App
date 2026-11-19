@@ -106,13 +106,18 @@ function getColumnIndex(columnMappings: string[], columnName: string): number {
 }
 
 function parseCSVAmount(value: string): number | undefined {
-    const sanitized = String(value).replaceAll(/[^\d.-]/g, '');
+    let sanitized = String(value).trim();
+    const isNegativeParenthesis = sanitized.startsWith('(') && sanitized.endsWith(')');
+    sanitized = sanitized.replaceAll(/[^\d.-]/g, '');
     if (!sanitized) {
         return undefined;
     }
-    const parsedAmount = Math.round(Number(sanitized) * 100);
+    let parsedAmount = Math.round(Number(sanitized) * 100);
     if (Number.isNaN(parsedAmount)) {
         return undefined;
+    }
+    if (isNegativeParenthesis) {
+        parsedAmount = -Math.abs(parsedAmount);
     }
     return parsedAmount;
 }
@@ -159,7 +164,9 @@ function buildOptimisticCompanyCardCSVTransactions(
             row[externalIDColumnIndex] = transactionID;
         }
 
-        const cardName = cardIdentityColumnIndex >= 0 ? row.at(cardIdentityColumnIndex)?.trim() : undefined;
+        const rawCardNumber = cardNumberColumnIndex >= 0 ? row.at(cardNumberColumnIndex)?.trim() : undefined;
+        const rawCardName = cardNameColumnIndex >= 0 ? row.at(cardNameColumnIndex)?.trim() : undefined;
+        const cardName = rawCardNumber || rawCardName;
         const rawPostedDate = row.at(postedDateColumnIndex)?.trim();
         const created = rawPostedDate ? parseCSVDate(rawPostedDate) : null;
         const merchant = row.at(merchantColumnIndex)?.trim() ?? '';
